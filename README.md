@@ -1,7 +1,7 @@
 News App using free api from https://newsapi.org/
 
 Widget and Packages Used : 
-1- Http Package 
+1- HTTP Package 
 this package allows you to deal with api links .
 if you wanna use it you can get it from here : https://pub.dev/packages/http
 2- Webview Package 
