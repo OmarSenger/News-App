@@ -35,29 +35,43 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _loadNews();
+    _loadNews('sport','eg');
   }
 
-  void _loadNews() async {
-    final result= await Webservices().loadNews('sport','eg');
-    final result2= await Webservices().loadNews('business','eg');
-    final result3= await Webservices().loadNews('science','eg');
-    final result4= await Webservices().loadNews('sport', 'us');
-    final result5= await Webservices().loadNews('business','us');
-    final result6= await Webservices().loadNews('science','us');
+   void _loadNews(String type , String country) async {
+    final result= await Webservices().loadNews(type,country);
     setState(() {
-      (_selectedIndex==0&&initialDropdownValue=='Egypt')? _news=result:(_selectedIndex==1&&initialDropdownValue=='Egypt')? _news=result2: (_selectedIndex==2&&initialDropdownValue=='Egypt')?_news=result3:(_selectedIndex==0&&initialDropdownValue!='Egypt')?_news=result4:(_selectedIndex==1&&initialDropdownValue!='Egypt')?_news=result5:_news=result6 ;
+      _news=result;
       isDataLoaded=true;
     });
   }
-
+void _circularIndicator(){
+  CircularProgressIndicator(backgroundColor:Colors.white);
+  isDataLoaded=false;
+}
   void _onItemTapped(int index) {
-    controller.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    controller.animateTo(0, duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
     setState(() {
       _selectedIndex = index;
-      _loadNews();
+      _circularIndicator();
+      if (_selectedIndex==0&&initialDropdownValue=='Egypt'){
+
+        _loadNews('sport', 'eg');
+      }else if (_selectedIndex==1&&initialDropdownValue=='Egypt') {
+
+        _loadNews('business', 'eg');
+      }else if (_selectedIndex==2&&initialDropdownValue=='Egypt'){
+        _loadNews('science', 'eg');
+      }else if (_selectedIndex==0&&initialDropdownValue!='Egypt'){
+        _loadNews('sport', 'us');
+      }else if (_selectedIndex==1&&initialDropdownValue!='Egypt'){
+        _loadNews('business', 'us');
+      } else {
+        _loadNews('science', 'us');
+      }
     });
   }
+List<String> values=["sport","business","science"];
 
 final ScrollController controller = ScrollController();
 
@@ -75,7 +89,9 @@ var urlImg = 'https://www.eduprizeschools.net/wp-content/uploads/2016/06/No_Imag
             const Text('News'),
             DropdownButton(
               value: initialDropdownValue,
-              onTap: _loadNews,
+              onTap: (){
+                _circularIndicator();
+              },
               underline: Container(),
               icon: Icon(Icons.arrow_downward),
               iconSize: 24.0,
@@ -85,15 +101,22 @@ var urlImg = 'https://www.eduprizeschools.net/wp-content/uploads/2016/06/No_Imag
               onChanged: (String newValue) {
                 setState(() {
                   initialDropdownValue = newValue;
+                  _circularIndicator();
+                  if(initialDropdownValue=="Egypt")
+                    _loadNews(values[_selectedIndex],'eg');
+                  else{
+                    _loadNews(values[_selectedIndex],'us');
+                  }
                 });
               },
-              items: <String>['Egypt','US'].map<DropdownMenuItem<String>>((String value){
+              items: <String>['Egypt','USA'].map<DropdownMenuItem<String>>((String value){
                   return DropdownMenuItem<String>(
                     value : value ,
                     child: Text(value),
                   );
                 }).toList(),
-            )],
+            )
+          ],
         ),
       ),
       body:isDataLoaded? ListView.builder(
